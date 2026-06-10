@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88d2d55efee12b444bcc3a1a5f65d8c0, type: 3}
+  m_Name: "Upgrade_Drain_d\xC2me"
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
+  UpgradeName: "Drain d'\xC2me"
+  Description: Soin 5% PV max par kill.
+  Icon: {fileID: 0}
+  Type: 2
+  Rarity: 1
+  Modifiers:
+  - TargetStat: 0
+    ModType: 0
+    Value: 15
+  IsUnique: 0
