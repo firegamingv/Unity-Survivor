@@ -126,7 +126,7 @@ public static class EFRITYSceneSetup
         descTMP.text = "Description de l'upgrade."; descTMP.fontSize = 15;
         descTMP.color = new Color(0.85f, 0.85f, 0.85f);
         descTMP.alignment = TextAlignmentOptions.Center;
-        descTMP.enableWordWrapping = true;
+        descTMP.textWrappingMode = TextWrappingModes.Normal;
 
         // ── Bouton "Choisir" ──────────────────────────────────────────────────
         var chooseGO = new GameObject("BTN_Choose_BG", typeof(RectTransform));

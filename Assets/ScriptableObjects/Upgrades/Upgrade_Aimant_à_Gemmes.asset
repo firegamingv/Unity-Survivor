@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
   UpgradeName: "Aimant \xE0 Gemmes"
   Description: "Rayon de collecte \xD72."
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 8661c2c7e325a33438f06b02458fd199, type: 3}
   Type: 0
   Rarity: 0
   Modifiers:

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
   UpgradeName: "Drain d'\xC2me"
   Description: Soin 5% PV max par kill.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: b7d19ec039fa7b141bd165aa95496c75, type: 3}
   Type: 2
   Rarity: 1
   Modifiers:

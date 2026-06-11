@@ -22,6 +22,9 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable, IPoolable
     public float CurrentHP { get; protected set; }
     public bool  IsDead    => CurrentHP <= 0f;
 
+    // PV max scalés calculés au moment du spawn (fixes pour toute la vie de l'instance)
+    private float _scaledMaxHP;
+
     // ─── Attaque ──────────────────────────────────────────────────────────────
     protected float _attackCooldownTimer = 0f;
 
@@ -68,7 +71,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable, IPoolable
 
     public void Heal(float amount)
     {
-        CurrentHP = Mathf.Min(CurrentHP + amount, MaxHP);
+        CurrentHP = Mathf.Min(CurrentHP + amount, _scaledMaxHP);
     }
 
     public void Die()
@@ -94,7 +97,8 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable, IPoolable
     // ─── IPoolable ────────────────────────────────────────────────────────────
     public virtual void OnSpawn()
     {
-        CurrentHP = MaxHP;
+        _scaledMaxHP = MaxHP * DifficultyScaler.HpMultiplier;
+        CurrentHP    = _scaledMaxHP;
         _attackCooldownTimer = 0f;
         gameObject.SetActive(true);
 
@@ -117,7 +121,7 @@ public abstract class EnemyBase : MonoBehaviour, IDamageable, IPoolable
         if (orb != null)
         {
             orb.transform.position = transform.position;
-            orb.SetXPValue(_data.XPReward);
+            orb.SetXPValue(_data.XPReward * DifficultyScaler.XpMultiplier);
         }
     }
 

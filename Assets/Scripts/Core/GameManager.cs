@@ -109,6 +109,7 @@ public class GameManager : MonoBehaviour
     public void TriggerLevelUp(int newLevel)
     {
         ChangeState(GameState.LevelUp);
+        UpgradeManager.Instance?.PrepareCards();
         EventBus<LevelUpEvent>.Publish(new LevelUpEvent { NewLevel = newLevel });
     }
 

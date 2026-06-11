@@ -5,6 +5,14 @@ using UnityEngine;
 public enum UpgradeType   { Stat, Weapon, Passive }
 public enum UpgradeRarity { Common, Rare, Epic }
 
+public enum WeaponModifierType
+{
+    None           = 0,
+    ExtraProjectile = 1,  // +N projectiles par tir en éventail
+    BurstOnKill    = 2,  // N projectiles explosent depuis la position du kill
+    OrbitalWeapon  = 3,  // N lames orbitales autour du joueur
+}
+
 // ─── UpgradeData ScriptableObject ─────────────────────────────────────────────
 
 /// <summary>
@@ -34,6 +42,12 @@ public class UpgradeData : ScriptableObject
     [Header("Modificateurs de stats")]
     [Tooltip("Liste des mods appliqués à PlayerStats ou WeaponSystem")]
     public StatModifier[] Modifiers;
+
+    [Header("Modificateurs d'arme")]
+    [Tooltip("Comportement spécial de l'arme déclenché par cet upgrade")]
+    public WeaponModifierType WeaponModifier = WeaponModifierType.None;
+    [Tooltip("ExtraProjectile: nb projectiles additionnels | BurstOnKill: nb projectiles | OrbitalWeapon: nb lames")]
+    public int WeaponModifierValue = 0;
 
     [Header("Règles")]
     [Tooltip("Si vrai, ne peut pas être sélectionné deux fois dans le même run")]

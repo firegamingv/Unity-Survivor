@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Menu affiché lors d'un level-up (timeScale = 0).
@@ -62,6 +63,7 @@ public class UpgradeMenuUI : MonoBehaviour, IEventListener<LevelUpEvent>
             var cardUI = cardGO.GetComponent<UpgradeCardUI>();
             cardUI?.Setup(upgradeData);
             _spawnedCards.Add(cardGO);
+            cardGO.GetComponent<Button>()?.onClick.AddListener(HideUpgradeMenu);
         }
     }
 

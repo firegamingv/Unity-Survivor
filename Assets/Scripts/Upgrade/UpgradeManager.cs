@@ -5,7 +5,7 @@ using UnityEngine;
 /// Gère le catalogue d'upgrades et la sélection de 3 cartes au level-up.
 /// Singleton — placé sur "_Managers/UpgradeManager".
 /// </summary>
-public class UpgradeManager : MonoBehaviour, IEventListener<LevelUpEvent>
+public class UpgradeManager : MonoBehaviour
 {
     // ─── Singleton ────────────────────────────────────────────────────────────
     public static UpgradeManager Instance { get; private set; }
@@ -29,9 +29,6 @@ public class UpgradeManager : MonoBehaviour, IEventListener<LevelUpEvent>
         Instance = this;
     }
 
-    private void OnEnable()  => EventBus<LevelUpEvent>.Subscribe(this);
-    private void OnDisable() => EventBus<LevelUpEvent>.Unsubscribe(this);
-
     private void Start()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -42,14 +39,10 @@ public class UpgradeManager : MonoBehaviour, IEventListener<LevelUpEvent>
         }
     }
 
-    // ─── IEventListener ───────────────────────────────────────────────────────
-    public void OnEvent(LevelUpEvent e)
-    {
-        _chosenCards = DrawCards(_cardCount);
-        // UpgradeMenuUI écoute aussi LevelUpEvent et affiche les cartes
-    }
-
     // ─── API ──────────────────────────────────────────────────────────────────
+    /// <summary>Tire les cartes pour ce level-up. Appelé par GameManager avant la publication de l'event.</summary>
+    public void PrepareCards() => _chosenCards = DrawCards(_cardCount);
+
     /// <summary>Retourne les cartes tirées pour l'affichage dans l'UI.</summary>
     public List<UpgradeData> GetCurrentCards() => _chosenCards;
 

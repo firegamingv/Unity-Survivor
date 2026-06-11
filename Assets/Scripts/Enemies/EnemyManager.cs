@@ -74,13 +74,17 @@ public class EnemyManager : MonoBehaviour, IEventListener<EnemyKilledEvent>
         UpdateCurrentPhase();
 
         if (_currentPhase == null) return;
-        if (_activeEnemies >= _currentPhase.MaxEnemies) return;
+
+        int   scaledMax      = Mathf.RoundToInt(_currentPhase.MaxEnemies * DifficultyScaler.MaxEnemiesMultiplier);
+        float scaledInterval = _currentPhase.SpawnInterval / DifficultyScaler.SpawnMultiplier;
+
+        if (_activeEnemies >= scaledMax) return;
 
         _spawnTimer -= Time.deltaTime;
         if (_spawnTimer <= 0f)
         {
             SpawnEnemy();
-            _spawnTimer = _currentPhase.SpawnInterval;
+            _spawnTimer = scaledInterval;
         }
     }
 
