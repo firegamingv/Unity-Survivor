@@ -1,26 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// ─── Données publiques ────────────────────────────────────────────────────────
-
-public enum AchievementTrigger
-{
-    KillsInRun,
-    KillsTotal,
-    SurviveSeconds,
-    ReachLevel,
-    RunsCompleted,
-}
-
-public class Achievement
-{
-    public string            ID;
-    public string            Name;
-    public string            Description;
-    public AchievementTrigger Trigger;
-    public int               Target;
-    public bool              IsUnlocked;
-}
+// Achievement + AchievementTrigger sont définis dans Achievement.cs
 
 // ─── Manager ──────────────────────────────────────────────────────────────────
 
