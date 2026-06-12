@@ -1045,9 +1045,10 @@ public static class EFRITYSceneSetup
         var vlg = Ensure<VerticalLayoutGroup>(btnContGO);
         vlg.spacing               = 14f;
         vlg.childAlignment        = TextAnchor.MiddleCenter;
+        vlg.childControlWidth     = true;
+        vlg.childControlHeight    = false;
         vlg.childForceExpandWidth = true;
         vlg.childForceExpandHeight= false;
-        vlg.childControlHeight    = false;
 
         var btnPlay = MakeMenuNavButton(btnContGO, "BTN_Play", "JOUER",       new Color(0.12f, 0.48f, 0.12f));
         MakeMenuNavButton(btnContGO, "BTN_LB",   "CLASSEMENT",  new Color(0.12f, 0.12f, 0.25f));
@@ -1160,9 +1161,13 @@ public static class EFRITYSceneSetup
         var rt = lblGO.GetComponent<RectTransform>();
         rt.offsetMin = new Vector2(18, 0);
         var tmp = Ensure<TextMeshProUGUI>(lblGO);
-        tmp.text = label; tmp.fontSize = 21;
-        tmp.fontStyle = FontStyles.Bold;
-        tmp.color = Color.white; tmp.alignment = TextAlignmentOptions.MidlineLeft;
+        tmp.text             = label;
+        tmp.fontSize         = 21;
+        tmp.fontStyle        = FontStyles.Bold;
+        tmp.color            = Color.white;
+        tmp.alignment        = TextAlignmentOptions.MidlineLeft;
+        tmp.textWrappingMode = TextWrappingModes.NoWrap;
+        tmp.overflowMode     = TextOverflowModes.Ellipsis;
         return go;
     }
 
@@ -1223,9 +1228,12 @@ public static class EFRITYSceneSetup
         contentRT.pivot     = new Vector2(0.5f, 1f);
         contentRT.anchoredPosition = Vector2.zero; contentRT.sizeDelta = Vector2.zero;
         var vlg = Ensure<VerticalLayoutGroup>(contentGO);
-        vlg.spacing = 6f; vlg.childAlignment = TextAnchor.UpperCenter;
-        vlg.childForceExpandWidth = true; vlg.childForceExpandHeight = false;
-        vlg.childControlHeight = false;
+        vlg.spacing               = 6f;
+        vlg.childAlignment        = TextAnchor.UpperCenter;
+        vlg.childControlWidth     = true;
+        vlg.childControlHeight    = false;
+        vlg.childForceExpandWidth = true;
+        vlg.childForceExpandHeight= false;
         vlg.padding = new RectOffset(6, 6, 6, 6);
         var csf = Ensure<ContentSizeFitter>(contentGO);
         csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;

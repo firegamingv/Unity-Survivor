@@ -21,6 +21,7 @@ public class AchievementManager : MonoBehaviour
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
+        transform.SetParent(null);      // DontDestroyOnLoad exige un root GO
         DontDestroyOnLoad(gameObject);
         BuildDefs();
         Load();
