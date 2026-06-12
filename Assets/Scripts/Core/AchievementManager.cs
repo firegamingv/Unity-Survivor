@@ -36,7 +36,7 @@ public class AchievementManager : MonoBehaviour,
         new Achievement { ID="run50",          Name="Acharne",        Description="Terminer 50 runs.",               Trigger=AchievementTrigger.RunsCompleted, Target=50    },
     };
 
-    public IReadOnlyList<Achievement> Achievements => _defs;
+    public Achievement[] Achievements => _defs;
 
     private HashSet<string> _unlocked    = new HashSet<string>();
     private int             _totalKills;

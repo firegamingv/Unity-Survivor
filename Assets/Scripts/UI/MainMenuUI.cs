@@ -202,7 +202,7 @@ public class MainMenuUI : MonoBehaviour
         infoTMP.text              = $"<b>{nameStr}</b>\n<size=13><color=#AAAAAA>{descStr}</color></size>";
         infoTMP.fontSize          = 17;
         infoTMP.color             = Color.white;
-        infoTMP.enableWordWrapping = true;
+        infoTMP.textWrappingMode = TextWrappingModes.Normal;
         infoTMP.alignment         = TextAlignmentOptions.MidlineLeft;
 
         // Barre de progression (sauf si débloqué)
