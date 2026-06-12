@@ -49,5 +49,13 @@ public struct UpgradeChosenEvent : IGameEvent
     public UpgradeData Upgrade; // L'upgrade sélectionné par le joueur
 }
 
+// ─── Succès ───────────────────────────────────────────────────────────────────
+
+public struct AchievementUnlockedEvent : IGameEvent
+{
+    public string Name;
+    public string Description;
+}
+
 // ─── Boss ─────────────────────────────────────────────────────────────────────
 // BossSpawnEvent → ajouté quand BossController sera implémenté

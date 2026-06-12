@@ -526,6 +526,8 @@ public static class EFRITYSceneSetup
         Ensure<EnemyManager>     (GetOrCreateChild(managers, "EnemyManager"));
         Ensure<XPSystem>         (GetOrCreateChild(managers, "XPSystem"));
         Ensure<UpgradeManager>   (GetOrCreateChild(managers, "UpgradeManager"));
+        Ensure<LeaderboardManager>(GetOrCreateChild(managers, "LeaderboardManager"));
+        Ensure<AchievementManager>(GetOrCreateChild(managers, "AchievementManager"));
 
         var audioGO = GetOrCreateChild(managers, "AudioManager");
         Ensure<AudioManager>(audioGO);
@@ -597,6 +599,8 @@ public static class EFRITYSceneSetup
         SetupHUD(canvasGO);
         SetupLevelUpPanel(canvasGO);
         SetupGameOverPanel(canvasGO);
+        SetupPausePanel(canvasGO);
+        SetupAchievementToast(canvasGO);
 
         Debug.Log("[EFRITY] Canvas ✓");
     }
@@ -704,7 +708,7 @@ public static class EFRITYSceneSetup
 
         // Titre GAME OVER
         var titleGO  = UIChild(panelGO, "TXT_GameOver");
-        Rect(titleGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, 130f, 500f, 80f);
+        Rect(titleGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, 150f, 500f, 80f);
         var titleTMP = Ensure<TextMeshProUGUI>(titleGO);
         titleTMP.text = "GAME OVER"; titleTMP.fontSize = 60;
         titleTMP.fontStyle = FontStyles.Bold;
@@ -713,38 +717,119 @@ public static class EFRITYSceneSetup
 
         // Stats
         var timeGO  = UIChild(panelGO, "TXT_Time");
-        Rect(timeGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, 40f, 400f, 36f);
+        Rect(timeGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, 55f, 420f, 36f);
         var timeTMP = Ensure<TextMeshProUGUI>(timeGO);
         timeTMP.text = "Temps : 00:00"; timeTMP.fontSize = 24;
         timeTMP.color = Color.white; timeTMP.alignment = TextAlignmentOptions.Center;
 
         var killsGO  = UIChild(panelGO, "TXT_Kills");
-        Rect(killsGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, -5f, 400f, 36f);
+        Rect(killsGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, 10f, 420f, 36f);
         var killsTMP = Ensure<TextMeshProUGUI>(killsGO);
         killsTMP.text = "Kills : 0"; killsTMP.fontSize = 24;
         killsTMP.color = Color.white; killsTMP.alignment = TextAlignmentOptions.Center;
 
         var levelGO  = UIChild(panelGO, "TXT_LevelReached");
-        Rect(levelGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, -50f, 400f, 36f);
+        Rect(levelGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, -35f, 420f, 36f);
         var levelTMP = Ensure<TextMeshProUGUI>(levelGO);
         levelTMP.text = "Niveau atteint : 1"; levelTMP.fontSize = 24;
         levelTMP.color = Color.white; levelTMP.alignment = TextAlignmentOptions.Center;
 
+        var scoreGO  = UIChild(panelGO, "TXT_Score");
+        Rect(scoreGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, -80f, 420f, 40f);
+        var scoreTMP = Ensure<TextMeshProUGUI>(scoreGO);
+        scoreTMP.text = "Score : 0"; scoreTMP.fontSize = 28;
+        scoreTMP.fontStyle = FontStyles.Bold;
+        scoreTMP.color = new Color(1f, 0.85f, 0f); scoreTMP.alignment = TextAlignmentOptions.Center;
+
+        var bestGO  = UIChild(panelGO, "TXT_BestScore");
+        Rect(bestGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, -118f, 420f, 28f);
+        var bestTMP = Ensure<TextMeshProUGUI>(bestGO);
+        bestTMP.text = ""; bestTMP.fontSize = 17;
+        bestTMP.color = new Color(0.65f, 0.65f, 0.65f); bestTMP.alignment = TextAlignmentOptions.Center;
+
         // Boutons
         var restartGO = MakeButton(panelGO, "BTN_Restart", "Rejouer",       new Color(0.1f, 0.55f, 0.1f));
-        Rect(restartGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -115f, -120f, 210f, 55f);
+        Rect(restartGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -115f, -165f, 210f, 55f);
 
         var menuGO = MakeButton(panelGO, "BTN_Menu", "Menu Principal", new Color(0.2f, 0.2f, 0.55f));
-        Rect(menuGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 115f, -120f, 210f, 55f);
+        Rect(menuGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 115f, -165f, 210f, 55f);
 
         Wire(ui, "_panel",         panelGO);
         Wire(ui, "_timeText",      timeTMP);
         Wire(ui, "_killsText",     killsTMP);
         Wire(ui, "_levelText",     levelTMP);
+        Wire(ui, "_scoreText",     scoreTMP);
+        Wire(ui, "_bestScoreText", bestTMP);
         Wire(ui, "_restartButton", restartGO.GetComponent<Button>());
         Wire(ui, "_menuButton",    menuGO.GetComponent<Button>());
 
         panelGO.SetActive(false);
+    }
+
+    // ── Pause Panel ───────────────────────────────────────────────────────────
+    static void SetupPausePanel(GameObject canvas)
+    {
+        var panelGO = UIChild(canvas, "Pause_Panel");
+        Stretch(panelGO);
+        Ensure<Image>(panelGO).color = new Color(0f, 0f, 0f, 0.72f);
+        var ui = Ensure<PauseMenuUI>(panelGO);
+
+        var titleGO  = UIChild(panelGO, "TXT_Pause");
+        Rect(titleGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, 100f, 400f, 70f);
+        var titleTMP = Ensure<TextMeshProUGUI>(titleGO);
+        titleTMP.text = "PAUSE"; titleTMP.fontSize = 52;
+        titleTMP.fontStyle = FontStyles.Bold;
+        titleTMP.color = Color.white; titleTMP.alignment = TextAlignmentOptions.Center;
+
+        var resumeGO = MakeButton(panelGO, "BTN_Resume", "Reprendre", new Color(0.1f, 0.55f, 0.1f));
+        Rect(resumeGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, 10f, 250f, 58f);
+
+        var restartGO = MakeButton(panelGO, "BTN_Restart", "Recommencer", new Color(0.5f, 0.38f, 0.08f));
+        Rect(restartGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, -60f, 250f, 58f);
+
+        var menuGO = MakeButton(panelGO, "BTN_Menu", "Menu Principal", new Color(0.2f, 0.2f, 0.55f));
+        Rect(menuGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, -130f, 250f, 58f);
+
+        Wire(ui, "_panel",         panelGO);
+        Wire(ui, "_resumeButton",  resumeGO.GetComponent<Button>());
+        Wire(ui, "_restartButton", restartGO.GetComponent<Button>());
+        Wire(ui, "_menuButton",    menuGO.GetComponent<Button>());
+
+        panelGO.SetActive(false);
+    }
+
+    // ── Achievement Toast ─────────────────────────────────────────────────────
+    static void SetupAchievementToast(GameObject canvas)
+    {
+        var toastGO = UIChild(canvas, "Achievement_Toast");
+        Rect(toastGO, 1f, 0f, 1f, 0f, 1f, 0f, 450f, 90f, 390f, 100f);
+        Ensure<Image>(toastGO).color = new Color(0.07f, 0.13f, 0.07f, 0.95f);
+        var ui = Ensure<AchievementToastUI>(toastGO);
+
+        var headGO  = UIChild(toastGO, "TXT_Title");
+        Rect(headGO, 0f, 1f, 1f, 1f, 0.5f, 1f, 0f, -9f, -20f, 24f);
+        var headTMP = Ensure<TextMeshProUGUI>(headGO);
+        headTMP.text = "SUCCES DEBLOQUE !"; headTMP.fontSize = 13;
+        headTMP.fontStyle = FontStyles.Bold;
+        headTMP.color = new Color(0.3f, 1f, 0.3f); headTMP.alignment = TextAlignmentOptions.Center;
+
+        var nameGO  = UIChild(toastGO, "TXT_Name");
+        Rect(nameGO, 0f, 0.42f, 1f, 1f, 0.5f, 1f, 0f, -38f, -20f, 34f);
+        var nameTMP = Ensure<TextMeshProUGUI>(nameGO);
+        nameTMP.text = "Nom"; nameTMP.fontSize = 22;
+        nameTMP.fontStyle = FontStyles.Bold;
+        nameTMP.color = Color.white; nameTMP.alignment = TextAlignmentOptions.Center;
+
+        var descGO  = UIChild(toastGO, "TXT_Desc");
+        Rect(descGO, 0f, 0f, 1f, 0.42f, 0.5f, 0.5f, 0f, 0f, -20f, 0f);
+        var descTMP = Ensure<TextMeshProUGUI>(descGO);
+        descTMP.text = "Description"; descTMP.fontSize = 13;
+        descTMP.color = new Color(0.75f, 0.75f, 0.75f); descTMP.alignment = TextAlignmentOptions.Center;
+
+        Wire(ui, "_toastPanel", toastGO.GetComponent<RectTransform>());
+        Wire(ui, "_titleText",  headTMP);
+        Wire(ui, "_nameText",   nameTMP);
+        Wire(ui, "_descText",   descTMP);
     }
 
     // ─── Caméra ───────────────────────────────────────────────────────────────
@@ -871,5 +956,353 @@ public static class EFRITYSceneSetup
         tmp.color     = Color.white;
         tmp.alignment = TextAlignmentOptions.Center;
         return go;
+    }
+
+    // ─── MainMenu Scene Builder ───────────────────────────────────────────────
+
+    [MenuItem("EFRITY/🏠 Créer Scène MainMenu")]
+    public static void BuildMainMenuScene()
+    {
+        EnsureFolder("Assets/Scenes");
+
+        var scene = UnityEditor.SceneManagement.EditorSceneManager.NewScene(
+            UnityEditor.SceneManagement.NewSceneSetup.EmptyScene,
+            UnityEditor.SceneManagement.NewSceneMode.Single);
+
+        // ── Caméra ────────────────────────────────────────────────────────────
+        var camGO = new GameObject("Main Camera");
+        camGO.tag = "MainCamera";
+        var cam = camGO.AddComponent<Camera>();
+        cam.clearFlags       = CameraClearFlags.SolidColor;
+        cam.backgroundColor  = new Color(0.03f, 0.03f, 0.06f);
+        cam.orthographic     = true;
+        cam.orthographicSize = 5f;
+        camGO.AddComponent<AudioListener>();
+
+        // ── EventSystem ───────────────────────────────────────────────────────
+        var esGO = new GameObject("EventSystem");
+        esGO.AddComponent<EventSystem>();
+        esGO.AddComponent<InputSystemUIInputModule>();
+
+        // ── Managers persistants ──────────────────────────────────────────────
+        var mgrsGO = new GameObject("_PersistentManagers");
+        var lbGO   = new GameObject("LeaderboardManager"); lbGO.transform.SetParent(mgrsGO.transform);
+        lbGO.AddComponent<LeaderboardManager>();
+        var achGO  = new GameObject("AchievementManager"); achGO.transform.SetParent(mgrsGO.transform);
+        achGO.AddComponent<AchievementManager>();
+        var audioMGO = new GameObject("AudioManager"); audioMGO.transform.SetParent(mgrsGO.transform);
+        audioMGO.AddComponent<AudioManager>();
+        audioMGO.AddComponent<AudioSource>();
+        audioMGO.AddComponent<AudioSource>();
+
+        // ── Canvas ────────────────────────────────────────────────────────────
+        var canvasGO = new GameObject("Canvas");
+        var cv = canvasGO.AddComponent<Canvas>();
+        cv.renderMode = RenderMode.ScreenSpaceOverlay;
+        var scaler = canvasGO.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode         = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920, 1080);
+        scaler.matchWidthOrHeight  = 0.5f;
+        canvasGO.AddComponent<GraphicRaycaster>();
+        var menuUI = canvasGO.AddComponent<MainMenuUI>();
+
+        // ── Fond sombre ───────────────────────────────────────────────────────
+        var bgGO = UIChild(canvasGO, "Background");
+        Stretch(bgGO);
+        Ensure<Image>(bgGO).color = new Color(0.03f, 0.03f, 0.06f);
+
+        // ── Panneau gauche (navigation) ───────────────────────────────────────
+        var navGO = new GameObject("NavPanel", typeof(RectTransform));
+        navGO.transform.SetParent(canvasGO.transform, false);
+        var navRT = navGO.GetComponent<RectTransform>();
+        navRT.anchorMin = new Vector2(0, 0); navRT.anchorMax = new Vector2(0, 1);
+        navRT.pivot     = new Vector2(0, 0.5f);
+        navRT.offsetMin = Vector2.zero; navRT.offsetMax = Vector2.zero;
+        navRT.sizeDelta = new Vector2(360, 0);
+        Ensure<Image>(navGO).color = new Color(0.06f, 0.06f, 0.10f, 1f);
+
+        // Titre
+        var titleGO  = UIChild(navGO, "TXT_Title");
+        Rect(titleGO, 0f, 1f, 1f, 1f, 0.5f, 1f, 0f, -55f, 0f, 90f);
+        var titleTMP = Ensure<TextMeshProUGUI>(titleGO);
+        titleTMP.text      = "EFRITY"; titleTMP.fontSize = 58;
+        titleTMP.fontStyle = FontStyles.Bold;
+        titleTMP.color     = new Color(0.9f, 0.15f, 0.15f);
+        titleTMP.alignment = TextAlignmentOptions.Center;
+
+        var subGO  = UIChild(navGO, "TXT_Sub");
+        Rect(subGO, 0f, 1f, 1f, 1f, 0.5f, 1f, 0f, -128f, 0f, 32f);
+        var subTMP = Ensure<TextMeshProUGUI>(subGO);
+        subTMP.text           = "SURVIVE"; subTMP.fontSize = 19;
+        subTMP.fontStyle      = FontStyles.Bold | FontStyles.SmallCaps;
+        subTMP.color          = new Color(0.55f, 0.55f, 0.55f);
+        subTMP.alignment      = TextAlignmentOptions.Center;
+        subTMP.characterSpacing = 12f;
+
+        // Container boutons
+        var btnContGO = UIChild(navGO, "ButtonContainer");
+        Rect(btnContGO, 0.08f, 0f, 0.92f, 1f, 0.5f, 0.5f, 0f, -30f, 0f, -280f);
+        var vlg = Ensure<VerticalLayoutGroup>(btnContGO);
+        vlg.spacing               = 14f;
+        vlg.childAlignment        = TextAnchor.MiddleCenter;
+        vlg.childForceExpandWidth = true;
+        vlg.childForceExpandHeight= false;
+        vlg.childControlHeight    = false;
+
+        var btnPlay = MakeMenuNavButton(btnContGO, "BTN_Play", "JOUER",       new Color(0.12f, 0.48f, 0.12f));
+        MakeMenuNavButton(btnContGO, "BTN_LB",   "CLASSEMENT",  new Color(0.12f, 0.12f, 0.25f));
+        MakeMenuNavButton(btnContGO, "BTN_Ach",  "SUCCES",      new Color(0.12f, 0.12f, 0.25f));
+        MakeMenuNavButton(btnContGO, "BTN_Set",  "PARAMETRES",  new Color(0.12f, 0.12f, 0.25f));
+        MakeMenuNavButton(btnContGO, "BTN_Quit", "QUITTER",     new Color(0.40f, 0.08f, 0.08f));
+
+        // Version
+        var verGO  = UIChild(navGO, "TXT_Version");
+        Rect(verGO, 0f, 0f, 1f, 0f, 0.5f, 0f, 0f, 12f, 0f, 22f);
+        var verTMP = Ensure<TextMeshProUGUI>(verGO);
+        verTMP.text = "v0.1 - Alpha"; verTMP.fontSize = 13;
+        verTMP.color = new Color(0.38f, 0.38f, 0.38f); verTMP.alignment = TextAlignmentOptions.Center;
+
+        // ── Panneau droit (contenu) ───────────────────────────────────────────
+        var contentGO = new GameObject("ContentPanel", typeof(RectTransform));
+        contentGO.transform.SetParent(canvasGO.transform, false);
+        var contentRT = contentGO.GetComponent<RectTransform>();
+        contentRT.anchorMin = new Vector2(0, 0); contentRT.anchorMax = new Vector2(1, 1);
+        contentRT.offsetMin = new Vector2(360, 0); contentRT.offsetMax = Vector2.zero;
+
+        // Panel Accueil
+        var panelHome = UIChild(contentGO, "Panel_Home");
+        Stretch(panelHome);
+        SetupHomeContent(panelHome);
+
+        // Panel Classement
+        var panelLB = UIChild(contentGO, "Panel_Leaderboard");
+        Stretch(panelLB);
+        TMP_Text lbEmpty;
+        Transform lbContent = SetupScrollContent(panelLB, "CLASSEMENT", out lbEmpty);
+
+        // Panel Succès
+        var panelAch = UIChild(contentGO, "Panel_Achievements");
+        Stretch(panelAch);
+        TMP_Text achEmpty;
+        Transform achContent = SetupScrollContent(panelAch, "SUCCES", out achEmpty);
+
+        // Panel Paramètres
+        var panelSet = UIChild(contentGO, "Panel_Settings");
+        Stretch(panelSet);
+        Slider musicSlider, sfxSlider;
+        TMP_Text musicLabel, sfxLabel;
+        SetupSettingsContent(panelSet, out musicSlider, out sfxSlider, out musicLabel, out sfxLabel);
+
+        // ── Câblage MainMenuUI ────────────────────────────────────────────────
+        var so = new SerializedObject(menuUI);
+
+        // Buttons
+        WireMenuBtn(so, "_btnPlay",         btnContGO, "BTN_Play");
+        WireMenuBtn(so, "_btnLeaderboard",  btnContGO, "BTN_LB");
+        WireMenuBtn(so, "_btnAchievements", btnContGO, "BTN_Ach");
+        WireMenuBtn(so, "_btnSettings",     btnContGO, "BTN_Set");
+        WireMenuBtn(so, "_btnQuit",         btnContGO, "BTN_Quit");
+
+        so.FindProperty("_panelHome").objectReferenceValue          = panelHome;
+        so.FindProperty("_panelLeaderboard").objectReferenceValue   = panelLB;
+        so.FindProperty("_panelAchievements").objectReferenceValue  = panelAch;
+        so.FindProperty("_panelSettings").objectReferenceValue      = panelSet;
+        so.FindProperty("_leaderboardContent").objectReferenceValue = lbContent;
+        if (lbEmpty != null) so.FindProperty("_leaderboardEmptyText").objectReferenceValue = lbEmpty;
+        so.FindProperty("_achievementsContent").objectReferenceValue = achContent;
+        if (musicSlider != null) so.FindProperty("_musicSlider").objectReferenceValue = musicSlider;
+        if (sfxSlider   != null) so.FindProperty("_sfxSlider").objectReferenceValue   = sfxSlider;
+        if (musicLabel  != null) so.FindProperty("_musicLabel").objectReferenceValue  = musicLabel;
+        if (sfxLabel    != null) so.FindProperty("_sfxLabel").objectReferenceValue    = sfxLabel;
+        so.ApplyModifiedProperties();
+
+        // ── Cacher les panneaux non-accueil ───────────────────────────────────
+        panelLB.SetActive(false);
+        panelAch.SetActive(false);
+        panelSet.SetActive(false);
+
+        // ── Sauvegarde ────────────────────────────────────────────────────────
+        UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene, "Assets/Scenes/MainMenu.unity");
+        AssetDatabase.Refresh();
+
+        // Ajoute les scènes au Build Settings
+        AddToBuildSettings("Assets/Scenes/MainMenu.unity",  0);
+        AddToBuildSettings("Assets/Scenes/SampleScene.unity", 1);
+
+        Debug.Log("[EFRITY] ✅ Scène MainMenu créée : Assets/Scenes/MainMenu.unity");
+        EditorUtility.DisplayDialog("EFRITY 🏠 ✅",
+            "Scène MainMenu créée !\n\n" +
+            "Dans Build Settings :\n" +
+            "  Index 0 = MainMenu\n" +
+            "  Index 1 = SampleScene\n\n" +
+            "Lance MainMenu comme scène de départ.",
+            "Parfait !");
+    }
+
+    // ─── Helpers MainMenu ─────────────────────────────────────────────────────
+
+    static GameObject MakeMenuNavButton(GameObject parent, string name, string label, Color bg)
+    {
+        var go  = UIChild(parent, name);
+        var le  = go.AddComponent<LayoutElement>();
+        le.preferredHeight = 58f; le.flexibleWidth = 1f;
+        var img = Ensure<Image>(go);
+        img.color = bg;
+        var btn = Ensure<Button>(go);
+        btn.targetGraphic = img;
+        var colors = btn.colors;
+        colors.highlightedColor = new Color(
+            Mathf.Min(bg.r * 1.5f, 1f), Mathf.Min(bg.g * 1.5f, 1f), Mathf.Min(bg.b * 1.5f, 1f));
+        colors.pressedColor = new Color(bg.r * 0.6f, bg.g * 0.6f, bg.b * 0.6f);
+        btn.colors = colors;
+        var lblGO = UIChild(go, "Label");
+        Stretch(lblGO);
+        var rt = lblGO.GetComponent<RectTransform>();
+        rt.offsetMin = new Vector2(18, 0);
+        var tmp = Ensure<TextMeshProUGUI>(lblGO);
+        tmp.text = label; tmp.fontSize = 21;
+        tmp.fontStyle = FontStyles.Bold;
+        tmp.color = Color.white; tmp.alignment = TextAlignmentOptions.MidlineLeft;
+        return go;
+    }
+
+    static void SetupHomeContent(GameObject panel)
+    {
+        var msgGO  = UIChild(panel, "TXT_Welcome");
+        Rect(msgGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, 80f, 700f, 80f);
+        var msgTMP = Ensure<TextMeshProUGUI>(msgGO);
+        msgTMP.text      = "Pret a survivre ?";
+        msgTMP.fontSize  = 42; msgTMP.fontStyle = FontStyles.Bold;
+        msgTMP.color     = Color.white; msgTMP.alignment = TextAlignmentOptions.Center;
+
+        var subGO  = UIChild(panel, "TXT_Sub");
+        Rect(subGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, 10f, 600f, 50f);
+        var subTMP = Ensure<TextMeshProUGUI>(subGO);
+        subTMP.text      = "Des vagues infinies vous attendent.";
+        subTMP.fontSize  = 22; subTMP.color = new Color(0.7f, 0.7f, 0.7f);
+        subTMP.alignment = TextAlignmentOptions.Center;
+
+        var hintGO  = UIChild(panel, "TXT_Hint");
+        Rect(hintGO, 0.5f, 0f, 0.5f, 0f, 0.5f, 0f, 0f, 35f, 600f, 30f);
+        var hintTMP = Ensure<TextMeshProUGUI>(hintGO);
+        hintTMP.text = "Tip : Echap = Pause  |  Click JOUER pour commencer";
+        hintTMP.fontSize = 15; hintTMP.color = new Color(0.45f, 0.45f, 0.45f);
+        hintTMP.alignment = TextAlignmentOptions.Center;
+    }
+
+    static Transform SetupScrollContent(GameObject panel, string title, out TMP_Text emptyText)
+    {
+        var titleGO  = UIChild(panel, "TXT_Title");
+        Rect(titleGO, 0.5f, 1f, 0.5f, 1f, 0.5f, 1f, 0f, -35f, 700f, 60f);
+        var titleTMP = Ensure<TextMeshProUGUI>(titleGO);
+        titleTMP.text = title; titleTMP.fontSize = 34;
+        titleTMP.fontStyle = FontStyles.Bold;
+        titleTMP.color = Color.white; titleTMP.alignment = TextAlignmentOptions.Center;
+
+        var svGO = new GameObject("ScrollView", typeof(RectTransform));
+        svGO.transform.SetParent(panel.transform, false);
+        var svRT = svGO.GetComponent<RectTransform>();
+        svRT.anchorMin = new Vector2(0.02f, 0.03f); svRT.anchorMax = new Vector2(0.98f, 0.88f);
+        svRT.offsetMin = Vector2.zero; svRT.offsetMax = Vector2.zero;
+        Ensure<Image>(svGO).color = new Color(0, 0, 0, 0);
+        var sr = Ensure<ScrollRect>(svGO);
+        sr.horizontal = false; sr.vertical = true;
+        sr.scrollSensitivity = 30f;
+
+        var vpGO = UIChild(svGO, "Viewport");
+        Stretch(vpGO);
+        var vpImg = Ensure<Image>(vpGO);
+        vpImg.color = new Color(0, 0, 0, 0.01f);
+        var mask = Ensure<Mask>(vpGO);
+        mask.showMaskGraphic = false;
+        sr.viewport = vpGO.GetComponent<RectTransform>();
+
+        var contentGO = UIChild(vpGO, "Content");
+        var contentRT = contentGO.GetComponent<RectTransform>();
+        contentRT.anchorMin = new Vector2(0, 1); contentRT.anchorMax = new Vector2(1, 1);
+        contentRT.pivot     = new Vector2(0.5f, 1f);
+        contentRT.anchoredPosition = Vector2.zero; contentRT.sizeDelta = Vector2.zero;
+        var vlg = Ensure<VerticalLayoutGroup>(contentGO);
+        vlg.spacing = 6f; vlg.childAlignment = TextAnchor.UpperCenter;
+        vlg.childForceExpandWidth = true; vlg.childForceExpandHeight = false;
+        vlg.childControlHeight = false;
+        vlg.padding = new RectOffset(6, 6, 6, 6);
+        var csf = Ensure<ContentSizeFitter>(contentGO);
+        csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        sr.content = contentRT;
+
+        var emptyGO  = UIChild(panel, "TXT_Empty");
+        Rect(emptyGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, 0f, 500f, 50f);
+        emptyText = Ensure<TextMeshProUGUI>(emptyGO);
+        emptyText.text = "Aucune entree pour l'instant.";
+        emptyText.fontSize = 20; emptyText.color = new Color(0.5f, 0.5f, 0.5f);
+        emptyText.alignment = TextAlignmentOptions.Center;
+        emptyGO.SetActive(false);
+
+        return contentGO.transform;
+    }
+
+    static void SetupSettingsContent(GameObject panel,
+        out Slider musicSlider, out Slider sfxSlider,
+        out TMP_Text musicLabel, out TMP_Text sfxLabel)
+    {
+        var titleGO  = UIChild(panel, "TXT_Title");
+        Rect(titleGO, 0.5f, 1f, 0.5f, 1f, 0.5f, 1f, 0f, -35f, 600f, 60f);
+        var titleTMP = Ensure<TextMeshProUGUI>(titleGO);
+        titleTMP.text = "PARAMETRES"; titleTMP.fontSize = 34;
+        titleTMP.fontStyle = FontStyles.Bold;
+        titleTMP.color = Color.white; titleTMP.alignment = TextAlignmentOptions.Center;
+
+        // Musique
+        var mlbGO = UIChild(panel, "TXT_MusicLabel");
+        Rect(mlbGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, 80f, 500f, 38f);
+        musicLabel = Ensure<TextMeshProUGUI>(mlbGO);
+        musicLabel.text = "Musique : 100%"; musicLabel.fontSize = 22;
+        musicLabel.color = Color.white; musicLabel.alignment = TextAlignmentOptions.Center;
+
+        var mSliderGO = MakeSlider(panel, "Slider_Music", new Color(0.3f, 0.6f, 1f));
+        Rect(mSliderGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, 35f, 500f, 28f);
+        musicSlider = mSliderGO.GetComponent<Slider>();
+
+        // Effets
+        var slbGO = UIChild(panel, "TXT_SFXLabel");
+        Rect(slbGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, -35f, 500f, 38f);
+        sfxLabel = Ensure<TextMeshProUGUI>(slbGO);
+        sfxLabel.text = "Effets : 100%"; sfxLabel.fontSize = 22;
+        sfxLabel.color = Color.white; sfxLabel.alignment = TextAlignmentOptions.Center;
+
+        var sSliderGO = MakeSlider(panel, "Slider_SFX", new Color(1f, 0.65f, 0.2f));
+        Rect(sSliderGO, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0f, -80f, 500f, 28f);
+        sfxSlider = sSliderGO.GetComponent<Slider>();
+
+        // Bouton Effacer données
+        var clearGO = MakeButton(panel, "BTN_Clear", "Effacer classement + succes",
+                                  new Color(0.4f, 0.1f, 0.1f));
+        Rect(clearGO, 0.5f, 0f, 0.5f, 0f, 0.5f, 0f, 0f, 55f, 380f, 50f);
+    }
+
+    static void WireMenuBtn(SerializedObject so, string propName, GameObject container, string childName)
+    {
+        var child = container.transform.Find(childName);
+        if (child == null) return;
+        var btn = child.GetComponent<Button>();
+        if (btn == null) return;
+        var prop = so.FindProperty(propName);
+        if (prop != null) { prop.objectReferenceValue = btn; so.ApplyModifiedProperties(); }
+    }
+
+    static void AddToBuildSettings(string scenePath, int index)
+    {
+        var scenes = new System.Collections.Generic.List<EditorBuildSettingsScene>(
+            EditorBuildSettings.scenes);
+
+        // Retire si déjà présent
+        scenes.RemoveAll(s => s.path == scenePath);
+
+        var newScene = new EditorBuildSettingsScene(scenePath, true);
+        if (index >= scenes.Count) scenes.Add(newScene);
+        else                       scenes.Insert(index, newScene);
+
+        EditorBuildSettings.scenes = scenes.ToArray();
     }
 }

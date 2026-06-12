@@ -124,6 +124,10 @@ public class GameManager : MonoBehaviour
     {
         if (CurrentState == GameState.GameOver) return;
         ChangeState(GameState.GameOver);
+
+        int level = XPSystem.Instance != null ? XPSystem.Instance.Level : 1;
+        LeaderboardManager.Instance?.AddRun(RunResult.Create(RunTime, TotalKills, level));
+        AchievementManager.Instance?.OnRunEnd();
     }
 
     /// <summary>Relance complète du niveau.</summary>
