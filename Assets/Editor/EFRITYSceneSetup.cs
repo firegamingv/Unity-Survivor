@@ -691,15 +691,15 @@ public static class EFRITYSceneSetup
         titleTMP.color = Color.white; titleTMP.fontStyle = FontStyles.Bold;
         titleTMP.alignment = TextAlignmentOptions.Center;
 
-        // Retire l'ancien UpgradeMenuUI de panelGO s'il y en a un
-        // (maintenant on le met sur un GO toujours actif séparé)
-        var oldUI = panelGO.GetComponent<UpgradeMenuUI>();
-        if (oldUI != null) Object.DestroyImmediate(oldUI);
+        // Supprime TOUS les UpgradeMenuUI du canvas (actifs ou non) pour éviter
+        // les doublons — quand LevelUp_Panel s'active, Awake() se ré-exécute
+        // sur l'ancien composant et génère des doublons de cartes.
+        var allMenuUIs = canvas.GetComponentsInChildren<UpgradeMenuUI>(true);
+        foreach (var old in allMenuUIs) Object.DestroyImmediate(old);
 
-        // UpgradeMenuUI sur un GO toujours actif — Awake() peut être appelé,
-        // la subscription LevelUpEvent survit aux SetActive du panel visuel.
+        // Un seul UpgradeMenuUI sur un GO toujours actif.
         var controllerGO = UIChild(canvas, "LevelUp_Controller");
-        var ui = Ensure<UpgradeMenuUI>(controllerGO);
+        var ui = controllerGO.AddComponent<UpgradeMenuUI>();
 
         Wire(ui, "_cardContainer", container.transform);
         Wire(ui, "_panel",         panelGO);
