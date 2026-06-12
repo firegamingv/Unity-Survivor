@@ -668,11 +668,11 @@ public static class EFRITYSceneSetup
     // ── LevelUp Panel ─────────────────────────────────────────────────────────
     static void SetupLevelUpPanel(GameObject canvas)
     {
+        // Panneau visuel (commence inactif)
         var panelGO = UIChild(canvas, "LevelUp_Panel");
         Stretch(panelGO);
         var bg = Ensure<Image>(panelGO);
         bg.color = new Color(0f, 0f, 0f, 0.75f);
-        var ui = Ensure<UpgradeMenuUI>(panelGO);
 
         // Container des 3 cartes
         var container = UIChild(panelGO, "CardContainer");
@@ -691,10 +691,17 @@ public static class EFRITYSceneSetup
         titleTMP.color = Color.white; titleTMP.fontStyle = FontStyles.Bold;
         titleTMP.alignment = TextAlignmentOptions.Center;
 
+        // UpgradeMenuUI DOIT être sur un GO toujours actif (pas sur le panel).
+        // Si le composant est sur panelGO, son Start() appelle _panel.SetActive(false)
+        // ce qui déclenche OnDisable → unsubscribe → LevelUpEvent jamais reçu.
+        var controllerGO = UIChild(canvas, "LevelUp_Controller");
+        var ui = Ensure<UpgradeMenuUI>(controllerGO);
+
         Wire(ui, "_cardContainer", container.transform);
         Wire(ui, "_panel",         panelGO);
 
         panelGO.SetActive(false);
+        // controllerGO reste actif
     }
 
     // ── GameOver Panel ────────────────────────────────────────────────────────
