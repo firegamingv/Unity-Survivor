@@ -1174,7 +1174,7 @@ public static class EFRITYSceneSetup
         tmp.color            = Color.white;
         tmp.alignment        = TextAlignmentOptions.MidlineLeft;
         tmp.textWrappingMode = TextWrappingModes.NoWrap;
-        tmp.overflowMode     = TextOverflowModes.Ellipsis;
+        tmp.overflowMode     = TextOverflowModes.Truncate;
         return go;
     }
 
