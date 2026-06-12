@@ -691,14 +691,22 @@ public static class EFRITYSceneSetup
         titleTMP.color = Color.white; titleTMP.fontStyle = FontStyles.Bold;
         titleTMP.alignment = TextAlignmentOptions.Center;
 
-        // UpgradeMenuUI DOIT être sur un GO toujours actif (pas sur le panel).
-        // Si le composant est sur panelGO, son Start() appelle _panel.SetActive(false)
-        // ce qui déclenche OnDisable → unsubscribe → LevelUpEvent jamais reçu.
+        // Retire l'ancien UpgradeMenuUI de panelGO s'il y en a un
+        // (maintenant on le met sur un GO toujours actif séparé)
+        var oldUI = panelGO.GetComponent<UpgradeMenuUI>();
+        if (oldUI != null) Object.DestroyImmediate(oldUI);
+
+        // UpgradeMenuUI sur un GO toujours actif — Awake() peut être appelé,
+        // la subscription LevelUpEvent survit aux SetActive du panel visuel.
         var controllerGO = UIChild(canvas, "LevelUp_Controller");
         var ui = Ensure<UpgradeMenuUI>(controllerGO);
 
         Wire(ui, "_cardContainer", container.transform);
         Wire(ui, "_panel",         panelGO);
+
+        // Câble le prefab UpgradeCard s'il existe déjà
+        var cardPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/UpgradeCard.prefab");
+        if (cardPrefab != null) Wire(ui, "_cardPrefab", cardPrefab);
 
         panelGO.SetActive(false);
         // controllerGO reste actif

@@ -22,8 +22,10 @@ public class UpgradeMenuUI : MonoBehaviour, IEventListener<LevelUpEvent>
     private readonly List<GameObject> _spawnedCards = new List<GameObject>();
 
     // ─── Unity ────────────────────────────────────────────────────────────────
-    private void OnEnable()  => EventBus<LevelUpEvent>.Subscribe(this);
-    private void OnDisable() => EventBus<LevelUpEvent>.Unsubscribe(this);
+    // Awake/OnDestroy plutôt que OnEnable/OnDisable : la subscription doit
+    // survivre aux SetActive(false) du panel visuel qui contient ce composant.
+    private void Awake()     => EventBus<LevelUpEvent>.Subscribe(this);
+    private void OnDestroy() => EventBus<LevelUpEvent>.Unsubscribe(this);
 
     private void Start()
     {
